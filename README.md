@@ -110,19 +110,36 @@ start-claude.cmd fable
 start-codex.cmd mistral/mistral-medium-3-5 exec "…"
 ```
 
-| Kurzname | Kennung am Gateway |
-|---|---|
-| `fable` | `anthropic/claude-fable-5-2` |
-| `opus` | `anthropic/claude-opus-5-5` |
-| `sonnet` | `anthropic/claude-sonnet-5-5` |
-| `haiku` | `anthropic/claude-haiku-5-5` |
-| `mistral` | `mistral/mistral-medium-3-5` |
-| `glm` | `mistral/zai-glm-5-3` |
-| `deepseek` | `mistral/deepseek-v4-1-flash-1017` |
+| Kurzname | Kennung am Gateway | Anbieter und Standort laut Modell-Liste in AuxData |
+|---|---|---|
+| `fable` | `anthropic/claude-fable-5-2` | Anthropic, USA |
+| `opus` | `anthropic/claude-opus-5-5` | Anthropic, USA |
+| `sonnet` | `anthropic/claude-sonnet-5-5` | Anthropic, USA |
+| `haiku` | `anthropic/claude-haiku-5-5` | Anthropic, USA |
+| `mistral` | `mistral/mistral-medium-3-5` | Mistral, Frankreich (EU) |
+| `devstral` | `mistral/devstral-latest` | Mistral, Frankreich (EU) |
+| `glm` | `mistral/zai-glm-5-3` | Mistral, Frankreich (EU) |
+| `deepseek` | `mistral/deepseek-v4-1-flash-1017` | Mistral, Frankreich (EU) |
+| `qwen` | `openhippo/openhippo/Qwen3.8-27B` | OpenHippo, Deutschland |
+| `qwen-ionos` | `ionos/Qwen/Qwen3.8-27B` | IONOS, Deutschland |
+
+Die Standorte stammen aus der Modell-Liste einer AuxData-Organisation vom 17.11.2026. Maßgeblich ist, was eure Administration unter „Verfügbare LLM's“ sieht und freigibt.
+
+### Mit Modellen aus der EU arbeiten
+
+Du bist nicht auf die Claude-Modelle angewiesen. Codex und Claude Code laufen über die Bridge auch mit Modellen, die AuxData bei Anbietern in Frankreich und Deutschland führt, zum Beispiel von Mistral, OpenHippo und IONOS:
+
+```
+start-claude.cmd devstral
+start-codex.cmd qwen
+start-codex.cmd openhippo/tensorx/glm-5.3-flash
+```
+
+Dann geht dein Quelltext an keinen Anbieter in den USA. Ob das für euren Fall genügt, entscheidet euer Datenschutz, nicht dieses Paket: Dazu gehören auch der Vertrag mit AuxData und die Frage, was Codex oder Claude Code selbst an ihre Hersteller melden.
 
 Eigene Kurznamen trägst du in `models.json` ein. Welche Modelle es bei dir gibt, zeigt `einrichten --pruefen` für die Kurznamen und der Gateway unter `/v1/models` für alle; die Bridge reicht die Liste durch (`GET http://127.0.0.1:8790/v1/models` mit deinem Schlüssel als Bearer). Die Kennung besteht immer aus Anbieter, Schrägstrich und Modell. Ohne den Anbieter davor antwortet der Gateway mit 404 „Model not found or not permitted“.
 
-Claude Code läuft auch mit Modellen, die nicht von Anthropic stammen, hier etwa `mistral`, `glm` und `deepseek`. Es meldet dann `Claude Code doesn't recognize the model …, so it assumes a context window of 1m tokens`. Das Kontextfenster dieser Modelle ist kleiner; bei langen Sitzungen kann eine Anfrage deshalb zu groß werden.
+Claude Code läuft auch mit Modellen, die nicht von Anthropic stammen, hier etwa `mistral`, `devstral`, `glm`, `deepseek` und `qwen`. Es meldet dann `Claude Code doesn't recognize the model …, so it assumes a context window of 1m tokens`. Das Kontextfenster dieser Modelle ist kleiner; bei langen Sitzungen kann eine Anfrage deshalb zu groß werden.
 
 Claude Code kennt neben dem Modell der Sitzung drei Plätze: Opus, Sonnet und Haiku. Welche Kennung hinter jedem Platz liegt, steht in `models.json`; der Starter übergibt sie als `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL` und `ANTHROPIC_DEFAULT_HAIKU_MODEL`.
 
@@ -191,8 +208,9 @@ und startet mit `codex -c model_provider=auxdata -m anthropic/claude-sonnet-5-5`
 
 Stand 17.11.2026, Windows 11, Node 24, Codex CLI 0.169.0, Claude Code 2.1.326, gegen `https://auxdata.ai`:
 
-- Codex über die Bridge mit `anthropic/claude-sonnet-5-5`, `anthropic/claude-haiku-5-5`, `anthropic/claude-haiku-4-5`, `mistral/mistral-medium-3-5`, `mistral/zai-glm-5-3` und `mistral/deepseek-v4-1-flash-1017`: Datei lesen; mit Haiku 4.5 auch Datei anlegen.
-- Claude Code über die Bridge mit Sonnet 5.5, Haiku 5.5, GLM 5.3 und DeepSeek V4.1 Flash: Datei lesen. Opus 5.5 und Fable 5.2: kurze Antwort.
+- Codex über die Bridge mit `anthropic/claude-sonnet-5-5`, `anthropic/claude-haiku-5-5`, `anthropic/claude-haiku-4-5`, `mistral/mistral-medium-3-5`, `mistral/devstral-latest`, `mistral/zai-glm-5-3`, `mistral/deepseek-v4-1-flash-1017`, `openhippo/openhippo/Qwen3.8-27B`, `openhippo/tensorx/glm-5.3-flash`, `openhippo/aki-io/deepseek-v4.1-flash-552b` und `ionos/Qwen/Qwen3.8-27B`: Datei lesen; mit Haiku 4.5 auch Datei anlegen.
+- Claude Code über die Bridge mit Sonnet 5.5, Haiku 5.5, Mistral Medium 3.5, Devstral, GLM 5.3, DeepSeek V4.1 Flash, mit Qwen 3.8 27B, GLM 5.3 Flash und DeepSeek V4.1 Flash von OpenHippo und mit Qwen 3.8 27B von IONOS: Datei lesen. Opus 5.5 und Fable 5.2: kurze Antwort.
+- Das sind kurze Läufe mit einem Werkzeugaufruf. Wie gut ein Modell eine längere Aufgabe an echtem Quelltext löst, zeigen sie nicht.
 - Claude Code mit `--direkt` (Sonnet 4.6): Datei lesen.
 - `einrichten` in beiden Fassungen: Schlüssel prüfen, `.env` anlegen, Rückfrage vor dem Überschreiben, abgelehnter Schlüssel.
 - Die `.sh`-Starter sind unter Git Bash auf Windows gelaufen, auf macOS und Linux bisher nicht.
@@ -203,6 +221,16 @@ Die Tests laufen ohne Netz:
 ```bash
 node --test
 ```
+
+## Erweitern und aktualisieren
+
+Das Paket ist dafür gedacht, dass du es anpasst.
+
+- Neue Modelle: einen Kurznamen in `models.json` eintragen, `einrichten --pruefen` zeigt, ob dein Schlüssel das Modell nutzen darf. Ändert AuxData eine Kennung oder kommt ein neues Modell dazu, reicht diese eine Zeile.
+- Standardmodell: bei `start-codex` die Zeile `DefaultModel` bzw. `DEFAULT_MODEL` oben im Startskript; `start-claude` nimmt, was in `models.json` hinter `sonnet` steht.
+- Neue Fassung holen: `git pull` im Ordner der Bridge, danach `node bridge.js --stop`; der nächste Start nimmt die neue Fassung. Deine `.env` bleibt unberührt.
+- Verhalten ändern: Die Bridge ist eine Datei. Die Übersetzung für Codex und der Durchreicher für Claude Code sind eigene Abschnitte, und `node --test` prüft beide ohne Netz. Wer ein weiteres Werkzeug anbinden will, das eine dieser beiden Schnittstellen spricht, braucht meist nur ein weiteres Startskript.
+- Wenn AuxData eine der beiden Lücken schließt (`/v1/responses`, Systemnachrichten in `/v1/messages`), wird der zugehörige Teil der Bridge überflüssig. `start-claude --direkt` zeigt, wie der Aufruf ohne Bridge aussieht.
 
 ## Lizenz
 

@@ -5,7 +5,10 @@
     "sonnet": "anthropic/claude-sonnet-5-5",
     "haiku": "anthropic/claude-haiku-5-5",
     "mistral": "mistral/mistral-medium-3-5",
+    "devstral": "mistral/devstral-latest",
     "glm": "mistral/zai-glm-5-3",
-    "deepseek": "mistral/deepseek-v4-1-flash-1017"
+    "deepseek": "mistral/deepseek-v4-1-flash-1017",
+    "qwen": "openhippo/openhippo/Qwen3.8-27B",
+    "qwen-ionos": "ionos/Qwen/Qwen3.8-27B"
   }
 }
