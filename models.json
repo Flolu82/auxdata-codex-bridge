@@ -1,0 +1,11 @@
+{
+  "aliases": {
+    "fable": "anthropic/claude-fable-5-2",
+    "opus": "anthropic/claude-opus-5-5",
+    "sonnet": "anthropic/claude-sonnet-5-5",
+    "haiku": "anthropic/claude-haiku-5-5",
+    "mistral": "mistral/mistral-medium-3-5",
+    "glm": "mistral/zai-glm-5-3",
+    "deepseek": "mistral/deepseek-v4-1-flash-1017"
+  }
+}
